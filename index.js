@@ -14,10 +14,14 @@ const settings = {
 // Source
 var gamedata = new Map();
 var playerdata = new Map();
-const io = require("socket.io")();
-io.listen(3000);
+const express = require("express");
+const app = express();
+const server = require("http").createServer(app);
+const io = require("socket.io")(server);
+server.listen(3000);
 
 io.on("connection", async (socket) => {
+  console.log("A user connected");
   var game = {
     host: {
       type: null,
@@ -43,6 +47,7 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("game.join", (json) => {
+    console.log(json)
     // Player joining mechanics
     if (!gamedata.has(json.id)) return socket.emit("error.invalidid");
     if (gamedata.get(json.id).host.players.length >= settings.game.maxplayers)
@@ -51,8 +56,8 @@ io.on("connection", async (socket) => {
     game.user.userid = generateUserID();
     game.user.username = json.username;
     playerdata.set(game.user.userid, game);
-    io.emit("game.playerjoin", game.user);
-    socket.emit("game.joined");
+    io.emit("game.playerjoin", {userdata: game.user});
+    socket.emit("game.joined", {userdata: game.user});
   });
 
   socket.on("disconnect", () => {
