@@ -17,11 +17,19 @@ var playerdata = new Map();
 const express = require("express");
 const app = express();
 const server = require("http").createServer(app);
-const io = require("socket.io")(server);
-console.log(
-  "Started server on port " + server.listen(3000, () => {}).address().port
-);
-
+const io = require("socket.io")(server, {
+  cors: {
+    allowedHeaders: [
+      "Access-Control-Allow-Origin",
+      "Access-Control-Allow-Methods",
+      "Access-Control-Allow-Headers",
+    ],
+    methods: ["GET", "POST"],
+  },
+});
+server.listen(() => {
+  console.log("Started server");
+});
 io.on("connection", async (socket) => {
   console.log("A user connected");
   var game = {
