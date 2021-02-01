@@ -18,7 +18,9 @@ const express = require("express");
 const app = express();
 const server = require("http").createServer(app);
 const io = require("socket.io")(server);
-server.listen(3000);
+server.listen(()=>{
+  console.log("Started server")
+});
 
 io.on("connection", async (socket) => {
   console.log("A user connected");
