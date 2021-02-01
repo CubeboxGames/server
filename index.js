@@ -21,7 +21,6 @@ const io = require("socket.io")(server);
 console.log(
   "Started server on port " + server.listen(3000, () => {}).address().port
 );
-app.use(express.static("./public/"));
 
 io.on("connection", async (socket) => {
   console.log("A user connected");
