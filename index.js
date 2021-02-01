@@ -21,7 +21,7 @@ const io = require("socket.io")(server);
 server.listen(()=>{
   console.log("Started server")
 });
-
+app.use(express.static("./public/"))
 io.on("connection", async (socket) => {
   console.log("A user connected");
   var game = {
