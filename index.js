@@ -18,10 +18,11 @@ const express = require("express");
 const app = express();
 const server = require("http").createServer(app);
 const io = require("socket.io")(server);
-server.listen(()=>{
-  console.log("Started server")
-});
-app.use(express.static("./public/"))
+console.log(
+  "Started server on port " + server.listen(3000, () => {}).address().port
+);
+app.use(express.static("./public/"));
+
 io.on("connection", async (socket) => {
   console.log("A user connected");
   var game = {
@@ -49,7 +50,7 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("game.join", (json) => {
-    console.log(json)
+    console.log(json);
     // Player joining mechanics
     if (!gamedata.has(json.id)) return socket.emit("error.invalidid");
     if (gamedata.get(json.id).host.players.length >= settings.game.maxplayers)
@@ -58,8 +59,8 @@ io.on("connection", async (socket) => {
     game.user.userid = generateUserID();
     game.user.username = json.username;
     playerdata.set(game.user.userid, game);
-    io.emit("game.playerjoin", {userdata: game.user});
-    socket.emit("game.joined", {userdata: game.user});
+    io.emit("game.playerjoin", { userdata: game.user });
+    socket.emit("game.joined", { userdata: game.user });
   });
 
   socket.on("disconnect", () => {
