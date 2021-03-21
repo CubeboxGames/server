@@ -27,7 +27,7 @@ const io = require("socket.io")(server, {
     methods: ["GET", "POST"],
   },
 });
-server.listen(() => {
+server.listen(3000, () => {
   console.log("Started server");
 });
 io.on("connection", async (socket) => {
