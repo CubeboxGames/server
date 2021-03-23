@@ -48,16 +48,16 @@ io.on("connection", async (socket) => {
   };
 
   // Main player joining stuff
-  socket.on("game.host", async (json) => {
-    json = JSON.parse(json);
-    // Creates a game session and saves the data
-    game.id = generateGameID();
-    game.socketid = socket.id;
-    game.host.type = json.type;
-    game.socket = socket;
-    gamedata.set(game.id, game);
-    socket.emit("game.createdgame", game);
-  });
+    socket.on("game.host", async (json) => {
+      json = JSON.parse(json);
+      // Creates a game session and saves the data
+      game.id = generateGameID();
+      game.socketid = socket.id;
+      game.host.type = json.type;
+      game.socket = socket;
+      gamedata.set(game.id, game);
+      socket.emit("game.createdgame", {code:game.id});
+    });
 
   socket.on("game.join", (json) => {
     json = JSON.parse(json);
