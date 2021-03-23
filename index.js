@@ -39,6 +39,7 @@ io.on("connection", async (socket) => {
     },
     socket: null,
     id: null,
+    socketid:null,
     user: {
       username: null,
       userid: null,
@@ -50,6 +51,7 @@ io.on("connection", async (socket) => {
   socket.on("game.host", async (json) => {
     // Creates a game session and saves the data
     game.id = generateGameID();
+    game.socketid = socket.id
     game.host.type = json.type;
     game.socket = socket;
     gamedata.set(game.id, game);
@@ -63,7 +65,7 @@ io.on("connection", async (socket) => {
     if (gamedata.get(json.id).host.players.length >= settings.game.maxplayers)
       return socket.emit("error.full"); // May be removed if audience is added
     game.user.gameid = json.id;
-    game.user.userid = generateUserID();
+    game.user.userid = socket.id;
     game.user.username = json.username;
     playerdata.set(game.user.userid, game);
     io.emit("game.playerjoin", { userdata: game.user });
@@ -78,12 +80,12 @@ io.on("connection", async (socket) => {
       gamedata.delete(game.id); // Make sure to delete the player id so that theres no issues with lots of games
     }
     // Player disconnect
-    if (game.user.id) {
+    if (game.user.gameid) {
       io.emit("game.playerleave", {
-        id: game.user.id,
+        id: game.user.userid,
         username: game.user.username,
       });
-      playerdata.delete(game.user.id); // Make sure to delete the player id so that theres no issues with lots of players
+      playerdata.delete(game.user.userid); // Make sure to delete the player id so that theres no issues with lots of players
     }
   });
 
@@ -97,13 +99,6 @@ io.on("connection", async (socket) => {
     io.emit("game.unpause", { id: json.id });
   });
 });
-
-// Generates an ID for the user
-function generateUserID() {
-  let id = getRandomInt(settings.player.minid, settings.player.maxid);
-  if (playerdata.has(id)) return generateUserID();
-  else return id;
-}
 
 // Generates an ID for the game
 function generateGameID() {
