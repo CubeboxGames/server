@@ -39,7 +39,7 @@ io.on("connection", async (socket) => {
     },
     socket: null,
     id: null,
-    socketid:null,
+    socketid: null,
     user: {
       username: null,
       userid: null,
@@ -49,9 +49,10 @@ io.on("connection", async (socket) => {
 
   // Main player joining stuff
   socket.on("game.host", async (json) => {
+    json = JSON.parse(json);
     // Creates a game session and saves the data
     game.id = generateGameID();
-    game.socketid = socket.id
+    game.socketid = socket.id;
     game.host.type = json.type;
     game.socket = socket;
     gamedata.set(game.id, game);
@@ -59,7 +60,7 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("game.join", (json) => {
-    console.log(json);
+    json = JSON.parse(json);
     // Player joining mechanics
     if (!gamedata.has(json.id)) return socket.emit("error.invalidid");
     if (gamedata.get(json.id).host.players.length >= settings.game.maxplayers)
@@ -90,11 +91,13 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("game.pause", (json) => {
+    json = JSON.parse(json);
     // This is used as a "pause" menu. When the host is showing instructions or something
     io.emit("game.pause", { id: json.id, img: json.img });
   });
 
   socket.on("game.unpause", (json) => {
+    json = JSON.parse(json);
     // Disable the pause thing, althought i dont see really who would use it
     io.emit("game.unpause", { id: json.id });
   });
