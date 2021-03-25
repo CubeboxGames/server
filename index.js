@@ -4,11 +4,7 @@ const settings = {
     minpin: 1000, // The minumum value of the pin, Default: 1000
     maxpin: 9999, // The maximum value of the pin, Default: 9999
     maxplayers: 10, // Maximum amount of players in a game, Default: 10
-  },
-  player: {
-    minid: 1000, // The minimum value of a player's id, Default: 1000
-    maxid: 9999, // The maximum value of a player's id, Default: 9999
-  },
+  }
 };
 
 // Source
