@@ -34,15 +34,23 @@ app.get("/", (req, res) => {
 
 io.on("connected", async (socket) => {
   if (debug) console.log("DEBUG: User connected to server");
-  socket.on("createGame", () => {
+  socket.on("createGame", (maxplayers) => {
     let code = generateGameCode();
     if (code === "MAX_GAMES") return socket.emit("gameError", "MAX_GAMES");
-    data.hosts.set(code, { players: [], socket: socket });
+    data.hosts.set(code, {
+      players: [],
+      socket: socket,
+      max: maxplayers,
+      id: socket.id,
+    });
     socket.emit("createdGame", code);
   });
-  socket.on("joinGame", (code, username) =>{
-    
-  })
+  socket.on("joinGame", (code, username) => {
+    if (!data.hosts.has(code)) return socket.emit("gameError", "UNKNOWN_GAME");
+    if (data.hosts.get(code).max >= data.hosts.get(code).players.length)
+      return socket.emit("gameError", "FULL_GAME");
+      
+  });
 });
 
 /**
