@@ -1,5 +1,6 @@
 {
     "min":1000,
     "max":9999,
-    "maxgames":8999
+    "maxgames":8999,
+    "debug":true
 }
