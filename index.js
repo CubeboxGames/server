@@ -28,11 +28,7 @@ server.listen(3000, () => {
   console.log("Created by Blocks_n_more @ CubeboxGames");
 });
 
-app.get("/", (req, res) => {
-  res.redirect(404, "https://cbjoin.github.io/");
-});
-
-io.on("connected", async (socket) => {
+io.on("connection", async (socket) => {
   if (debug) console.log("DEBUG: User connected to server");
 
   socket.on("createGame", (type, maxplayers) => {
@@ -46,7 +42,7 @@ io.on("connected", async (socket) => {
       type: type,
     });
     if (debug) console.log("DEBUG: Game created!");
-    socket.emit("createdGame", code, socket.id);
+    socket.emit("createdGame", {Code:code, SocketID:socket.id});
   });
 
   socket.on("joinGame", (code, username) => {
