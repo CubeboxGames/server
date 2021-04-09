@@ -54,7 +54,7 @@ io.on("connection", async (socket) => {
     data.hosts
       .get(code)
       .players.push({ username: username, code: code, socket: socket });
-    data.hosts.get(code).socket.emit("joinedGame", (username, socket.id));
+    data.hosts.get(code).socket.emit("joinedGame", {Username:username, ID:socket.id});
   });
 
   socket.on("sendToPlayer", (gamecode, player, event, content) => {
