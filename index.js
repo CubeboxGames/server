@@ -30,7 +30,6 @@ server.listen(3000, () => {
 
 io.on("connection", async (socket) => {
   if (debug) console.log("DEBUG: User connected to server");
-
   socket.on("createGame", (type, maxplayers) => {
     let code = generateGameCode();
     if (code === "MAX_GAMES") return socket.emit("gameError", "MAX_GAMES");
@@ -40,8 +39,9 @@ io.on("connection", async (socket) => {
       max: maxplayers,
       id: socket.id,
       type: type,
+      code:code
     });
-    if (debug) console.log("DEBUG: Game created!");
+    if (debug) console.log("DEBUG: Game created with id "+code+"!");
     socket.emit("createdGame", {Code:code, SocketID:socket.id});
   });
 
@@ -53,7 +53,7 @@ io.on("connection", async (socket) => {
     socket.emit("joinedGame", type);
     data.hosts
       .get(code)
-      .players.push({ username: username, code: code, socket: socket });
+      .players.push({ username: username, code: code, socket: socket, id:socket.id });
     data.hosts.get(code).socket.emit("joinedGame", {Username:username, ID:socket.id});
   });
 
@@ -80,19 +80,17 @@ io.on("connection", async (socket) => {
     data.hosts.get(gamecode).socket.emit(event, content);
   });
   socket.on("disconnect", () => {
-    for (let key in data.hosts.keys) {
-      let game = data.hosts.get(key);
-      if (game.id === socket.id) {
-        game.players.forEach((p) => {
-          p.socket.emit("gameClosed");
-        });
-        return data.hosts.delete(key);
+    if(debug) console.log("A user disconnected! Socket id:", socket.id)
+    data.hosts.forEach(game=>{
+      if(game.id === socket.id){
+        if(debug) console.log("Host of game "+game.code+" has quit! Closing the game!");
+        data.hosts.delete(game.code);
       }
-      if (game.players.filter((p) => p.id === socket.id)[0]) {
-        game.socket.emit("playerLeave", socket.id);
-        return (game.players = game.players.filter((p) => p.id !== socket.id));
+      if(game.players.filter(f=>f.id === socket.id)[0]){
+        game.players = game.players.filter(f=>f.id !== socket.id)
+        if(debug) console.log("Player in game "+game.id+" has quit!");
       }
-    }
+    })
   });
 });
 
