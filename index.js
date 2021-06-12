@@ -42,7 +42,7 @@ io.on("connection", async (socket) => {
       code:code
     });
     if (debug) console.log("DEBUG: Game created with id "+code+"!");
-    socket.emit("createdGame", {Code:code, SocketID:socket.id});
+    socket.emit("createdGame", code, socket.id);
   });
 
   socket.on("joinGame", (code, username) => {
@@ -54,7 +54,7 @@ io.on("connection", async (socket) => {
     data.hosts
       .get(code)
       .players.push({ username: username, code: code, socket: socket, id:socket.id });
-    data.hosts.get(code).socket.emit("joinedGame", {Username:username, ID:socket.id});
+    data.hosts.get(code).socket.emit("joinedGame", username, socket.id);
   });
 
   socket.on("sendToPlayer", (gamecode, player, event, content) => {
