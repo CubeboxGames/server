@@ -1,0 +1,8 @@
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const socket = io();
+    socket.on("gameError",(e)=>{console.log("Got error!", e)});
+    function login(code) {
+        socket.emit("joinGame", code, 'blox');
+    }
+</script>
